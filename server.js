@@ -18,6 +18,9 @@ const wrap = fn => (req, res, next) => fn(req, res).catch(next);
 app.use(cors({ origin: ALLOWED_ORIGIN === '*' ? '*' : ALLOWED_ORIGIN.split(',').map(s => s.trim()) }));
 app.use(express.json({ limit: '100kb' }));
 
+// Serve o dashboard (public/index.html) na raiz do endereço do Render.
+app.use(express.static(require('path').join(__dirname, 'public')));
+
 // ---- autenticação via Supabase (cache de 30 s por token) ----
 const cache = new Map();
 setInterval(() => { for (const [k, v] of cache) if (v.exp < Date.now()) cache.delete(k); }, 60000).unref();
