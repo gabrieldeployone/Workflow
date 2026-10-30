@@ -1,0 +1,27 @@
+# Blueprint do Render: cria o banco Postgres + a API.
+# Suba esta pasta (render-api) para um repositório no GitHub e use New > Blueprint.
+databases:
+  - name: processos-db
+    databaseName: processos
+    user: processos_user
+    plan: free            # ajuste o plano se necessário (planos gratuitos têm limites)
+
+services:
+  - type: web
+    name: processos-api
+    runtime: node
+    plan: free            # no plano gratuito a API "dorme" e a 1ª chamada demora
+    buildCommand: npm install
+    startCommand: node server.js
+    healthCheckPath: /health
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: processos-db
+          property: connectionString
+      - key: SUPABASE_URL          # ex.: https://xxxx.supabase.co
+        sync: false
+      - key: SUPABASE_ANON_KEY     # chave anon/publishable (NUNCA a service_role)
+        sync: false
+      - key: ALLOWED_ORIGIN        # endereço onde o HTML será aberto; vários separados por vírgula; * libera todos
+        sync: false
